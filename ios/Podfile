@@ -5,7 +5,7 @@ ENV['COCOAPODS_DISABLE_STATS'] = 'true'
 
 # Define Flutter root directory
 def flutter_root
-  generated_xcode_build_settings_path = File.expand_path(File.join('ios', 'Flutter', 'Generated.xcconfig'))
+  generated_xcode_build_settings_path = File.expand_path(File.join('Flutter', 'Generated.xcconfig'))
   unless File.exist?(generated_xcode_build_settings_path)
     raise "#{generated_xcode_build_settings_path} must exist. If you're running pod install manually, make sure flutter pub get is executed first"
   end
