@@ -4,8 +4,8 @@ workflows:
     max_build_duration: 60
     environment:
       flutter: stable
-      xcode: 12.5  # You can update this based on your local Xcode version
-      cocoapods: true  # Enable CocoaPods support
+      xcode: 12.5  # Update based on your local Xcode version
+      cocoapods: 1.10.1  # Specify the version of CocoaPods you want to use
     scripts:
       # 1. Ensure dependencies are up-to-date
       - flutter pub get
@@ -21,9 +21,3 @@ workflows:
 
       # 5. Build the iOS app with Flutter, without code signing for CI/CD
       - flutter build ios --release --no-codesign
-
-   
-    # Optional: Configure the app for testing or distribution if needed
-    # tests:
-    #   ios:
-    #     test_results_dir: test_results
