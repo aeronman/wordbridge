@@ -13,14 +13,28 @@ workflows:
       # 2. Clean previous build artifacts
       - flutter clean
 
-      # 3. Remove existing 'ios' directory (optional, ensure you have backups)
-      - rm -rf ios
+      # 3. Navigate to 'ios' directory
+      - cd ios
 
-      # 4. Recreate 'ios' directory with necessary files
-      - flutter create --platforms=ios .
+      # 4. Check if 'Podfile' exists; if not, create one with the appropriate platform version
+      - |
+        if [ ! -f Podfile ]; then
+          cat <<EOF > Podfile
+          platform :ios, '13.0'
 
-      # 5. Navigate to 'ios' directory and install CocoaPods dependencies
-      - cd ios && pod install
+          target 'Runner' do
+            use_frameworks!
+            use_modular_headers!
+
+            flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
+          end
+          EOF
+        else
+          echo "Podfile already exists. Skipping creation."
+        fi
+
+      # 5. Install CocoaPods dependencies
+      - pod install
 
       # 6. Return to the root directory
       - cd ..
