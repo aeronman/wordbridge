@@ -8,36 +8,32 @@ workflows:
       cocoapods: 1.16.2
     scripts:
       # 1. Ensure Flutter dependencies are up-to-date
-      - flutter pub get
+      - name: Flutter Pub Get
+        script: flutter pub get
 
       # 2. Clean previous build artifacts
-      - flutter clean
+      - name: Flutter Clean
+        script: flutter clean
 
       # 3. Navigate to 'ios' directory
-      - cd ios
+      - name: Navigate to iOS Directory
+        script: cd ios
 
-      # 4. Check if 'Podfile' exists; if not, create one with the appropriate platform version
-      - |
-        if [ ! -f Podfile ]; then
-          cat <<EOF > Podfile
-          platform :ios, '13.0'
+      # 4. Remove existing build artifacts, Pods, and cache
+      - name: Clean iOS Build Artifacts and Cache
+        script: |
+          rm -rf build Pods Podfile.lock
+          rm -rf ~/.pub-cache/hosted/pub.dartlang.org/
+          pod cache clean --all
 
-          target 'Runner' do
-            use_frameworks!
-            use_modular_headers!
-
-            flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
-          end
-          EOF
-        else
-          echo "Podfile already exists. Skipping creation."
-        fi
-
-      # 5. Install CocoaPods dependencies
-      - pod install
+      # 5. Install CocoaPods dependencies with x86_64 architecture
+      - name: Install CocoaPods Dependencies
+        script: arch -x86_64 pod install --repo-update
 
       # 6. Return to the root directory
-      - cd ..
+      - name: Return to Root Directory
+        script: cd ..
 
       # 7. Build the iOS app with Flutter, without code signing for CI/CD
-      - flutter build ios --release --no-codesign
+      - name: Build iOS App
+        script: flutter build ios --release --no-codesign
