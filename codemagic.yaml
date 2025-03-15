@@ -15,11 +15,18 @@ workflows:
       - name: Flutter Clean
         script: flutter clean
 
-      # 3. Navigate to 'ios' directory
+      # 3. Generate iOS project files if they don't exist
+      - name: Generate iOS Project
+        script: |
+          if [ ! -d ios ]; then
+            flutter create --platforms ios .
+          fi
+
+      # 4. Navigate to 'ios' directory
       - name: Navigate to iOS Directory
         script: cd ios
 
-      # 4. Initialize Podfile and set platform to iOS 13
+      # 5. Initialize Podfile and set platform to iOS 13
       - name: Initialize and Configure Podfile
         script: |
           if [ ! -f Podfile ]; then
@@ -27,7 +34,7 @@ workflows:
             sed -i '' 's/# platform: :ios, '.*'/platform :ios, '13.0'/g' Podfile
           fi
 
-      # 5. Clean iOS build artifacts and install CocoaPods dependencies
+      # 6. Clean iOS build artifacts and install CocoaPods dependencies
       - name: Clean and Install Pods
         script: |
           rm -rf build Pods Podfile.lock
@@ -35,11 +42,10 @@ workflows:
           pod cache clean --all
           arch -x86_64 pod install --repo-update
 
-      # 6. Return to the root directory
+      # 7. Return to the root directory
       - name: Return to Root Directory
         script: cd ..
 
-      # 7. Build the iOS app with Flutter, without code signing for CI/CD
+      # 8. Build the iOS app with Flutter, without code signing for CI/CD
       - name: Build iOS App
         script: flutter build ios --release --no-codesign
-
