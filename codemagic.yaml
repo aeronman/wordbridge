@@ -4,23 +4,26 @@ workflows:
     max_build_duration: 60
     environment:
       flutter: stable
-      xcode: 16.2  # Update based on your local Xcode version
-      cocoapods: 1.16.2  # Specify the version of CocoaPods you want to use
+      xcode: 16.2
+      cocoapods: 1.16.2
     scripts:
-      # 1. Ensure dependencies are up-to-date
+      # 1. Ensure Flutter dependencies are up-to-date
       - flutter pub get
 
-      # 2. Clean any previous build artifacts (helps avoid caching issues)
+      # 2. Clean previous build artifacts
       - flutter clean
 
-      # 3. Ensure Podfile exists before running pod install
-      - cd ios && [ -f Podfile ] || flutter create .
+      # 3. Remove existing 'ios' directory (optional, ensure you have backups)
+      - rm -rf ios
 
-      # 4. Install CocoaPods dependencies
-      - pod install
+      # 4. Recreate 'ios' directory with necessary files
+      - flutter create --platforms=ios .
 
-      # 5. Return to the root directory
+      # 5. Navigate to 'ios' directory and install CocoaPods dependencies
+      - cd ios && pod install
+
+      # 6. Return to the root directory
       - cd ..
 
-      # 6. Build the iOS app with Flutter, without code signing for CI/CD
+      # 7. Build the iOS app with Flutter, without code signing for CI/CD
       - flutter build ios --release --no-codesign
