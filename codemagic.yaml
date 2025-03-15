@@ -19,16 +19,21 @@ workflows:
       - name: Navigate to iOS Directory
         script: cd ios
 
-      # 4. Remove existing build artifacts, Pods, and cache
-      - name: Clean iOS Build Artifacts and Cache
+      # 4. Initialize Podfile and set platform to iOS 13
+      - name: Initialize and Configure Podfile
+        script: |
+          if [ ! -f Podfile ]; then
+            pod init
+            sed -i '' 's/# platform: :ios, '.*'/platform :ios, '13.0'/g' Podfile
+          fi
+
+      # 5. Clean iOS build artifacts and install CocoaPods dependencies
+      - name: Clean and Install Pods
         script: |
           rm -rf build Pods Podfile.lock
           rm -rf ~/.pub-cache/hosted/pub.dartlang.org/
           pod cache clean --all
-
-      # 5. Install CocoaPods dependencies with x86_64 architecture
-      - name: Install CocoaPods Dependencies
-        script: arch -x86_64 pod install --repo-update
+          arch -x86_64 pod install --repo-update
 
       # 6. Return to the root directory
       - name: Return to Root Directory
@@ -37,3 +42,4 @@ workflows:
       # 7. Build the iOS app with Flutter, without code signing for CI/CD
       - name: Build iOS App
         script: flutter build ios --release --no-codesign
+
