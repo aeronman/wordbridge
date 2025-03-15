@@ -1,3 +1,29 @@
-scripts:
-  - name: Install Flutter dependencies
-    script: flutter pub get
+workflows:
+  ios:
+    name: Flutter iOS Build
+    max_build_duration: 60
+    environment:
+      flutter: stable
+      xcode: 12.5  # You can update this based on your local Xcode version
+      cocoapods: true  # Enable CocoaPods support
+    scripts:
+      # 1. Ensure dependencies are up-to-date
+      - flutter pub get
+
+      # 2. Clean any previous build artifacts (helps avoid caching issues)
+      - flutter clean
+
+      # 3. Change to the iOS directory and install pods
+      - cd ios && pod install
+
+      # 4. Return to the root directory
+      - cd ..
+
+      # 5. Build the iOS app with Flutter, without code signing for CI/CD
+      - flutter build ios --release --no-codesign
+
+   
+    # Optional: Configure the app for testing or distribution if needed
+    # tests:
+    #   ios:
+    #     test_results_dir: test_results
