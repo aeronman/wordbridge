@@ -1,0 +1,3 @@
+scripts:
+  - name: Install Flutter dependencies
+    script: flutter pub get
